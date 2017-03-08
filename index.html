@@ -4,52 +4,91 @@
     <meta charset='utf-8' />
     <title></title>
     <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
-    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.13.1/mapbox-gl.js'></script>
-    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.13.1/mapbox-gl.css' rel='stylesheet' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.32.1/mapbox-gl.js'></script>
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.32.1/mapbox-gl.css' rel='stylesheet' />
+     <link href='https://api.mapbox.com/mapbox-assembly/v0.6.0/assembly.min.css' rel='stylesheet'>
+    <script src='https://api.mapbox.com/mapbox-assembly/v0.6.0/assembly.js'></script>
+    
     <style>
         body { margin:0; padding:0; }
         #map { position:absolute; top:0; bottom:0; width:100%; }
-        #range {
-      position: absolute;
-      bottom: 10px;
-      /*width: 60%;*/
-      margin-left: 20%;
-      margin-right: 20%;
-      }
-      #rangeInput {
-      width: 900px;
-      
-              }
     </style>
 </head>
 <body>
-
-<div id='map'></div>
-<div id="range">
-      <input id="rangeInput" type="range" min="1366490575" max="1453297857" step="1000" value="1366490575" />
+<div class='viewport-full relative clip'>
+  <div id='map' class='bg-darken10 viewport-twothirds viewport-full-ml absolute top left right bottom'></div>
+  <div class='absolute top-ml left bottom z1 w-full w300-ml p12-ml'>
+    <div class='flex-parent flex-parent--column viewport-third h-auto-ml hmax-full bg-white round-ml shadow-darken5'>
+      <div class='p12 scroll-auto'>
+        <h3 class='txt-m txt-bold mb6'>Women in National Parliaments 2016</h3>
+        <p>A map to show women representation in political space. World average stands at 23%</p>
       </div>
+      <div class='w-full round p12 txt-s'>
+          <strong class='block mb6'>% represenation</strong>
+          <div class='flex-parent mb6'>
+           
+            <div class='flex-child flex-child--grow h12' style="background:#fc8d59;"></div>
+            <div class='flex-child flex-child--grow h12' style="background:#ffffbf;"></div>
+            <div class='flex-child flex-child--grow h12' style="background:#91bfdb;"></div>
+           
+          </div>
+          <div class='flex-parent txt-xs'>
+            <div class='flex-child flex-child--grow align-center'>0-22%</div>
+            <div class='flex-child flex-child--grow align-center'>23-100%</div>
+            <div class='flex-child flex-child--grow align-center'>No Data</div>
+            
+          </div>
+      </div>
+
+      <footer class='p12 bg-gray-faint round-b-ml txt-s'>
+        Data from <a href="http://data.worldbank.org/">World Bank</a>
+        
+       
+      </footer>
+    </div>
+  </div>
+</div>
 <script>
-mapboxgl.accessToken = 'pk.eyJ1IjoicmFteWFyYWd1cGF0aHkiLCJhIjoiOHRoa2JJTSJ9.6Y38XMOQL80LZyrUAjXgIg';
+mapboxgl.accessToken = 'pk.eyJ1IjoicmFzYWd5IiwiYSI6Ilk2ay1VMEEifQ.CJfn_CxDfwyN5xaVfx4jaw';
 var map = new mapboxgl.Map({
     container: 'map', // container id
-    style: 'mapbox://styles/ramyaragupathy/cijveshal00incakw2iv2pnpb' //stylesheet location
-    // center: [77.6, 12.98], // starting position
-    // zoom: 0 // starting zoom
+    style: 'mapbox://styles/rasagy/cj010l9bk00o82smwrtxaynaf', //stylesheet location
+    // center: [-110.77,39.21], // starting position
+    minZoom: 2,// starting zoom
+    maxZoom:2, 
+    hash: true
+    
 });
 
+var popup = new mapboxgl.Popup({
+    closeButton: false,
+    closeOnClick: false
+});
 
+map.on("mousemove", function(e) {
+        var features = map.queryRenderedFeatures(e.point, { layers: ["Choropleth"] });
+       map.getCanvas().style.cursor = (features.length) ? 'pointer' : '';
 
-// if the rangeInput.value is <=min then filter=nothing
-document.getElementById('rangeInput').addEventListener('input', function(e) {
-      var value = this.value;
-      console.log(value);
-     
-        map.setFilter('sf-combined', ['<=', '_timestamp', parseInt(value)]);
-     
-      // console.log(map.getFilter('sf-combined'));
-          });
+    if (!features.length) {
+        popup.remove();
+        return;
+    }
+
+    var feature = features[0];
+
+    // Populate the popup and set its coordinates
+    // based on the feature found.
+    if (feature.properties["2016"]!=undefined){
+       popup.setLngLat([feature.properties["LON"], feature.properties["LAT"]])
+        .setHTML(feature.properties["2016"] + "%")
+        .addTo(map);
+
+    }
+   
+});
 
 </script>
 
 </body>
 </html>
+
