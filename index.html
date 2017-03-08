@@ -59,7 +59,7 @@ var map = new mapboxgl.Map({
     hash: true
     
 });
-
+map.addControl(new mapboxgl.NavigationControl());
 var popup = new mapboxgl.Popup({
     closeButton: false,
     closeOnClick: false
